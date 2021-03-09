@@ -147,11 +147,11 @@ export default function App() {
                 <Divider />
 
                 <List>
-                    <ListItem button key="Intro" component={Link} to="/">
+                    <ListItem button key="Intro" component={Link} to="/ca-ml-webapp/">
                         <ListItemIcon> <InfoIcon /> </ListItemIcon>
                         <ListItemText primary="Introduction" />
                     </ListItem>
-                    <ListItem button key="1d_ca" component={Link} to="/about">
+                    <ListItem button key="1d_ca" component={Link} to="/ca-ml-webapp/about">
                         <ListItemIcon> <LooksOneIcon /> </ListItemIcon>
                         <ListItemText primary="1D CA" />
                     </ListItem>
@@ -168,8 +168,8 @@ export default function App() {
             <main className={classes.content}>
                 <div className={classes.toolbar} />
                 <Switch>
-                    <Route exact path="/" component={() => <Home />} />
-                    <Route exact path="/about" component={() => <About />} />
+                    <Route exact path="/ca-ml-webapp/" component={() => <Home />} />
+                    <Route exact path="/ca-ml-webapp/about" component={() => <About />} />
                 </Switch>
             </main>
         </div>
