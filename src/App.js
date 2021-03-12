@@ -1,6 +1,7 @@
 import React from 'react';
 import clsx from 'clsx';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
+
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -21,7 +22,7 @@ import BugReportIcon from '@material-ui/icons/BugReport';
 import TextureIcon from '@material-ui/icons/Texture';
 
 import { Route, Switch, Link } from "react-router-dom";
-import { Home, About } from "./components";
+import { Home, ElemCA } from "./components";
 
 const drawerWidth = 240;
 
@@ -151,9 +152,9 @@ export default function App() {
                         <ListItemIcon> <InfoIcon /> </ListItemIcon>
                         <ListItemText primary="Introduction" />
                     </ListItem>
-                    <ListItem button key="1d_ca" component={Link} to="/ca-ml-webapp/about">
+                    <ListItem button key="elementary" component={Link} to="/ca-ml-webapp/elementary">
                         <ListItemIcon> <LooksOneIcon /> </ListItemIcon>
-                        <ListItemText primary="1D CA" />
+                        <ListItemText primary="Elementary CA" />
                     </ListItem>
                     <ListItem button key="gol">
                         <ListItemIcon> <BugReportIcon /> </ListItemIcon>
@@ -169,7 +170,7 @@ export default function App() {
                 <div className={classes.toolbar} />
                 <Switch>
                     <Route exact path="/ca-ml-webapp/" component={() => <Home />} />
-                    <Route exact path="/ca-ml-webapp/about" component={() => <About />} />
+                    <Route exact path="/ca-ml-webapp/elementary" component={() => <ElemCA />} />
                 </Switch>
             </main>
         </div>
