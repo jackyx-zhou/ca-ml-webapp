@@ -6,24 +6,15 @@ const useStyles = makeStyles((theme) => ({
     image: {
         position: 'relative',
         flexDirection: 'column',
-        '&:hover, &$focusVisible': {
+        '&:hover': {
             zIndex: 1,
-            '& $imageBackdrop': {
-                opacity: 0.15,
-            },
-            '& $imageMarked': {
-                opacity: 0,
-            },
-            '& $imageTitle': {
-                border: '4px solid currentColor',
-            },
         },
     },
 }));
 
-export default function ElemCARuleButton(props) {
-    const onPic = props.onPic;
-    const offPic = props.offPic;
+export default function ElemCARuleCell(props) {
+    const onPic = 'caButtons/' + props.id + 'on.png';
+    const offPic = 'caButtons/' + props.id + 'off.png';
     const cellToggle = props.toggle;
 
     const classes = useStyles();

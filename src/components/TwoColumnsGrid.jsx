@@ -22,14 +22,14 @@ function TwoColumnsGrid(props) {
     <div className={classes.root}>
       <Grid container spacing={3}>
         <Grid item xs={12} sm={6}>
-          <Paper container className={classes.paper}>
+          <Paper className={classes.paper}>
           
             {props.left}
 
           </Paper>
         </Grid>
         <Grid item xs={12} sm={6}>
-          <Paper container className={classes.paper}>
+          <Paper className={classes.paper}>
 
             {props.right}
             
