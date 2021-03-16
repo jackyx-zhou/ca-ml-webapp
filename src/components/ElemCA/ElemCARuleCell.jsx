@@ -13,8 +13,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ElemCARuleCell(props) {
-    const onPic = 'caButtons/' + props.id + 'on.png';
-    const offPic = 'caButtons/' + props.id + 'off.png';
+    const onPic = process.env.PUBLIC_URL + '/caButtons/' + props.id + 'on.png';
+    const offPic = process.env.PUBLIC_URL + '/caButtons/' + props.id + 'off.png';
     const cellToggle = props.toggle;
 
     const classes = useStyles();

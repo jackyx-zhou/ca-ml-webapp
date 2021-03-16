@@ -96,11 +96,13 @@ export default function App() {
 
     useEffect(createVisor);
 
-    const handleDrawerOpen = () => {
+    const handleDrawerOpen = (e) => {
+        e.preventDefault();
         setOpen(true);
     };
 
-    const handleDrawerClose = () => {
+    const handleDrawerClose = (e) => {
+        e.preventDefault();
         setOpen(false);
     };
 
@@ -151,11 +153,11 @@ export default function App() {
                 <Divider />
 
                 <List>
-                    <ListItem button key="Intro" component={Link} to="/ca-ml-webapp/">
+                    <ListItem button key="Intro" component={Link} to="/">
                         <ListItemIcon> <InfoIcon /> </ListItemIcon>
                         <ListItemText primary="Introduction" />
                     </ListItem>
-                    <ListItem button key="elementary" component={Link} to="/ca-ml-webapp/elementary">
+                    <ListItem button key="elementary" component={Link} to="/elementary">
                         <ListItemIcon> <LooksOneIcon /> </ListItemIcon>
                         <ListItemText primary="Elementary CA" />
                     </ListItem>
@@ -172,8 +174,8 @@ export default function App() {
             <main className={classes.content}>
                 <div className={classes.toolbar} />
                 <Switch>
-                    <Route exact path="/ca-ml-webapp/" component={() => <Home />} />
-                    <Route exact path="/ca-ml-webapp/elementary" component={() => <ElemCA />} />
+                    <Route exact path="/" component={() => <Home />} />
+                    <Route exact path="/elementary" component={() => <ElemCA />} />
                 </Switch>
             </main>
         </div>
