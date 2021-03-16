@@ -1,25 +1,28 @@
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Button, Typography, Slider, Input, Grid } from "@material-ui/core";
 import * as tfvis from "@tensorflow/tfjs-vis"
-import * as catf from "./ElemCAtfjs";
+import * as catf from "./ElemCA/ElemCAtfjs";
 
 import TwoColumnsGrid from './TwoColumnsGrid';
 import MarginedContainer from './MarginedContainer';
-import ElemCARuleController from './ElemCARuleController';
+import ElemCARuleController from './ElemCA/ElemCARuleController';
+import ElemCAp5 from './ElemCA/ElemCAp5'
 
 export default function ElemCA() {
   const [ruleNum, setRuleNum] = useState(0);
   const [hiddenLayerUnits, setHiddenLayerUnits] = useState(0);
+  const [model, setModel] = useState(null);
+  const [isTraining, setIsTraining] = useState(false);
+  const modelP5Parent = useRef(null);
+  const [canvas, setCanvas] = useState(null);
+
+  const surface1 = { name: 'Model summary', tab: '1D CA' };
+  const surface2 = { name: 'Hidden Layer Summary', tab: '1D CA' };
+  const surface3 = { name: 'Hidden Layer Summary Post Training', tab: '1D CA'}
 
   const handleVisorButtonClick = event => {
-    console.log(event.currentTarget);
-    const visor = tfvis.visor();
-    tfvis.visor().el.style.position = "absolute";
-    tfvis.visor().el.style.zIndex = 2000;
-    if (visor) {
-      tfvis.visor().open();
-    }
+    tfvis.visor().open();
   }
 
   const handleBlur = () => {
@@ -34,14 +37,41 @@ export default function ElemCA() {
     setHiddenLayerUnits(newValue);
   };
 
-  const handleInputChange = (event) => {
+  const handleInputChange = event => {
     setHiddenLayerUnits(event.target.value === '' ? '' : Number(event.target.value));
   };
 
   const handleBuildButtonClick = (event) => {
-    let model = catf.getModel(hiddenLayerUnits);
-    console.log(catf.doPrediction(model));
+    let m = catf.getModel(hiddenLayerUnits);
+    tfvis.show.modelSummary(surface1, m);
+    tfvis.show.layer(surface2, m.getLayer(undefined, 1));
+    tfvis.visor().open();
+    setModel(m);
   };
+
+  const handleTrainModelButtonClick = event => {
+    catf.train(model, ruleNum).then(() => {
+      setIsTraining(false);
+      tfvis.show.layer(surface3, model.getLayer(undefined, 1));
+    });
+    tfvis.visor().open();
+    setIsTraining(true);
+  }
+
+  const handleStopTrainingButtonClick = event => {
+    model.stopTraining = true;
+    setIsTraining(false);
+    tfvis.show.layer(surface2, model.getLayer(undefined, 1));
+  }
+
+  const handleVisualiseModelButtonClick = (event) => {
+    let predRule = catf.doPrediction(model).reverse().reduce((total, t, i) => {
+      return total += t * 2 ** i;
+    }, 0);
+    console.log(predRule);
+    if (canvas) canvas.remove();
+    setCanvas(ElemCAp5(modelP5Parent.current, predRule));
+  }
 
   const left = (
     <>
@@ -90,6 +120,38 @@ export default function ElemCA() {
         <Button variant="contained" color="primary" onClick={handleBuildButtonClick}>
           Build Model
         </Button>
+      </MarginedContainer>
+      {
+        model ? 
+        <MarginedContainer>
+            <Grid container spacing={2} justify="center">
+              <Grid item>
+                <Button variant="contained" color="primary" onClick={handleVisualiseModelButtonClick}>
+                  Visualise
+                </Button>
+              </Grid>
+              <Grid item>
+                <Button variant="contained" color="primary" 
+                        onClick={handleTrainModelButtonClick}
+                        disabled={isTraining}>
+                  Train Model
+                </Button>
+              </Grid>
+              {
+                isTraining ? 
+                <Grid item>
+                  <Button variant="contained" color="secondary"
+                    onClick={handleStopTrainingButtonClick}>
+                    Stop training
+                  </Button>
+                </Grid> : null
+              }
+             
+            </Grid>
+        </MarginedContainer> : null
+      }
+      <MarginedContainer ref={modelP5Parent}>
+        <></>
       </MarginedContainer>
     </>
   )

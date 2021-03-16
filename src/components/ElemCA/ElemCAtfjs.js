@@ -1,6 +1,16 @@
 import * as tf from '@tensorflow/tfjs';
 import * as tfvis from '@tensorflow/tfjs-vis';
 
+let trainXs = [...Array(8).keys()].reverse().map(x => {
+    return x.toString(2).padStart(3, '0');
+})
+
+trainXs = trainXs.map(x => {
+    return x.split("").map(Number);
+})
+
+trainXs = tf.stack(trainXs);
+
 export function getModel(hiddenLayerUnits) {
     const model = tf.sequential();
     const INPUT_SIZE = 3;
@@ -20,7 +30,7 @@ export function getModel(hiddenLayerUnits) {
     
     // Choose an optimizer, loss function and accuracy metric,
     // then compile and return the model
-    const optimizer = tf.train.adam();
+    const optimizer = tf.train.sgd(0.2);
     model.compile({
         optimizer: optimizer,
         loss: 'binaryCrossentropy',
@@ -30,27 +40,21 @@ export function getModel(hiddenLayerUnits) {
     return model;
 }
 
-let trainXs = [...Array(8).keys()].reverse().map(x => {
-    return x.toString(2).padStart(3, '0');
-})
-
-trainXs = trainXs.map(x => {
-    return x.split("").map(Number);
-})
-
-trainXs = tf.stack(trainXs);
-
 export async function train(model, caRuleNum) {
-    const metrics = ['loss', 'val_loss', 'acc', 'val_acc'];
+    const metrics = ['loss', 'acc'];
     const container = {
-        name: 'Model Training', tab: 'Model', styles: { height: '1000px' }
+        name: 'Model Training', tab: '1D CA'
     };
-    const fitCallbacks = tfvis.show.fitCallbacks(container, metrics);
+    const fitCallbacks = {...tfvis.show.fitCallbacks(container, metrics,), 
+        onEpochEnd: (epoch, logs) => {
+            if (logs['acc'] > 0.9) model.stopTraining = true;
+        }};
 
-    const trainYs = caRuleNum.toString(2).padStart(8, '0').split("").map(Number);
+    let trainYs = caRuleNum.toString(2).padStart(8, '0').split("").map(Number);
+    trainYs = tf.stack(trainYs);
 
     return model.fit(trainXs, trainYs, {
-        epochs: 100,
+        epochs: 500,
         callbacks: fitCallbacks
     });
 }

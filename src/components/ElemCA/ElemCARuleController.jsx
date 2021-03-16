@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { TextField, Button } from '@material-ui/core';
-import MarginedContainer from './MarginedContainer';
+import MarginedContainer from '../MarginedContainer';
 import ElemCARuleCell from './ElemCARuleCell';
 import ElemCAp5 from './ElemCAp5'
 
@@ -80,12 +80,13 @@ export default function ElemCARuleController(props) {
                     value={ruleNum}
                     variant="outlined"
                     onChange={handleRuleNumChange}
-                    helperText={error ? "Only number between 0 and 255 allowed!" : ""}
+                    helperText={error ? "Only number between 0 and 255 allowed!" : 
+                                        "Suggestion: 30, 135, 193"}
                 />
             </MarginedContainer>
             <MarginedContainer>
                 <Button variant="contained" color="primary" onClick={handleRenderButtonClick}>
-                    Render
+                    Visualise
                 </Button>
             </MarginedContainer>
             <MarginedContainer ref={elemP5Parent}>

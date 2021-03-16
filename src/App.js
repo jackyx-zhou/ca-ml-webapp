@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import clsx from 'clsx';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 
@@ -23,6 +23,7 @@ import TextureIcon from '@material-ui/icons/Texture';
 
 import { Route, Switch, Link } from "react-router-dom";
 import { Home, ElemCA } from "./components";
+import { createVisor } from './helper';
 
 const drawerWidth = 240;
 
@@ -91,7 +92,9 @@ const useStyles = makeStyles((theme) => ({
 export default function App() {
     const classes = useStyles();
     const theme = useTheme();
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
+
+    useEffect(createVisor);
 
     const handleDrawerOpen = () => {
         setOpen(true);
