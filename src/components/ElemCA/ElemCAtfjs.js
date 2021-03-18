@@ -1,7 +1,9 @@
 import * as tf from '@tensorflow/tfjs';
 import * as tfvis from '@tensorflow/tfjs-vis';
 
-let trainXs = [...Array(8).keys()].reverse().map(x => {
+let trainXs, trainYs;
+
+trainXs = [...Array(8).keys()].reverse().map(x => {
     return x.toString(2).padStart(3, '0');
 })
 
@@ -12,6 +14,7 @@ trainXs = trainXs.map(x => {
 trainXs = tf.stack(trainXs);
 
 export function getModel(hiddenLayerUnits) {
+    tf.disposeVariables();
     const model = tf.sequential();
     const INPUT_SIZE = 3;
 
@@ -41,6 +44,8 @@ export function getModel(hiddenLayerUnits) {
 }
 
 export async function train(model, caRuleNum) {
+    if (trainYs) trainYs.dispose();
+    
     const metrics = ['loss', 'acc'];
     const container = {
         name: 'Model Training', tab: '1D CA'
@@ -50,7 +55,7 @@ export async function train(model, caRuleNum) {
             if (logs['acc'] > 0.9) model.stopTraining = true;
         }};
 
-    let trainYs = caRuleNum.toString(2).padStart(8, '0').split("").map(Number);
+    trainYs = caRuleNum.toString(2).padStart(8, '0').split("").map(Number);
     trainYs = tf.stack(trainYs);
 
     return model.fit(trainXs, trainYs, {
@@ -60,8 +65,10 @@ export async function train(model, caRuleNum) {
 }
 
 export function doPrediction(model, data, testDataSize = 500) {
-    let preds = model.predict(trainXs).dataSync();
-    return preds.map(x => Number(x > 0.5));
+    return tf.tidy(() => {
+        let preds = model.predict(trainXs).dataSync();
+        return preds.map(x => Number(x > 0.5));
+    })
 }
 
 // async function showAccuracy(model, data) {

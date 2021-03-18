@@ -1,7 +1,7 @@
 
 import React, { useState, useRef } from "react";
 import { Button, Typography, Slider, Input, Grid } from "@material-ui/core";
-import * as tfvis from "@tensorflow/tfjs-vis"
+import * as tfvis from "@tensorflow/tfjs-vis";
 import * as catf from "./ElemCAtfjs";
 
 import MarginedContainer from '../MarginedContainer';
