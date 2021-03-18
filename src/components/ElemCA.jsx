@@ -1,158 +1,35 @@
-
-import React, { useState, useRef } from "react";
-import { Button, Typography, Slider, Input, Grid } from "@material-ui/core";
-import * as tfvis from "@tensorflow/tfjs-vis"
-import * as catf from "./ElemCA/ElemCAtfjs";
+import React, { useState } from "react";
+import { Typography } from "@material-ui/core";
 
 import TwoColumnsGrid from './TwoColumnsGrid';
-import MarginedContainer from './MarginedContainer';
+// import MarginedContainer from './MarginedContainer';
 import ElemCARuleController from './ElemCA/ElemCARuleController';
-import ElemCAp5 from './ElemCA/ElemCAp5'
+import ElemCAML from './ElemCA/ElemCAML';
+import MainTextBox from "./MainTextBox";
 
 export default function ElemCA() {
   const [ruleNum, setRuleNum] = useState(0);
-  const [hiddenLayerUnits, setHiddenLayerUnits] = useState(0);
-  const [model, setModel] = useState(null);
-  const [isTraining, setIsTraining] = useState(false);
-  const modelP5Parent = useRef(null);
-  const [canvas, setCanvas] = useState(null);
-
-  const surface1 = { name: 'Model summary', tab: '1D CA' };
-  const surface2 = { name: 'Hidden Layer Summary', tab: '1D CA' };
-  const surface3 = { name: 'Hidden Layer Summary Post Training', tab: '1D CA'}
-
-  const handleVisorButtonClick = event => {
-    tfvis.visor().open();
-  }
-
-  const handleBlur = () => {
-    if (hiddenLayerUnits < 0) {
-      setHiddenLayerUnits(0);
-    } else if (hiddenLayerUnits > 32) {
-      setHiddenLayerUnits(32);
-    }
-  };
-
-  const handleSliderChange = (event, newValue) => {
-    setHiddenLayerUnits(newValue);
-  };
-
-  const handleInputChange = event => {
-    setHiddenLayerUnits(event.target.value === '' ? '' : Number(event.target.value));
-  };
-
-  const handleBuildButtonClick = (event) => {
-    let m = catf.getModel(hiddenLayerUnits);
-    tfvis.show.modelSummary(surface1, m);
-    tfvis.show.layer(surface2, m.getLayer(undefined, 1));
-    tfvis.visor().open();
-    setModel(m);
-  };
-
-  const handleTrainModelButtonClick = event => {
-    catf.train(model, ruleNum).then(() => {
-      setIsTraining(false);
-      tfvis.show.layer(surface3, model.getLayer(undefined, 1));
-    });
-    tfvis.visor().open();
-    setIsTraining(true);
-  }
-
-  const handleStopTrainingButtonClick = event => {
-    model.stopTraining = true;
-    setIsTraining(false);
-    tfvis.show.layer(surface2, model.getLayer(undefined, 1));
-  }
-
-  const handleVisualiseModelButtonClick = (event) => {
-    let predRule = catf.doPrediction(model).reverse().reduce((total, t, i) => {
-      return total += t * 2 ** i;
-    }, 0);
-    console.log(predRule);
-    if (canvas) canvas.remove();
-    setCanvas(ElemCAp5(modelP5Parent.current, predRule));
-  }
 
   const left = (
     <>
+      <Typography variant='h4' gutterBottom>Elementary CA</Typography>
+      <MainTextBox>
+        <a href='https://www.cantorsparadise.com/elementary-cellular-automaton-e27e3d1008d9'>Wolfram's elementary cellular automata</a> are one-dimensional, constructed with two possible values for each cell (0 or 1),
+        and rules that depend only on itself and the nearest neighbor values.<br/>
+        Below is a simple demo you can play around with different rule set by either clicking on individual rule cells or input the rule number directly. The top row in the grid is initialised with only the middle cell "on", and every row below is 1 timestep after evolving from its row above. 
+      </MainTextBox>
       <ElemCARuleController ruleNum={ruleNum} setRuleNum={setRuleNum} />
     </>
   )
   const right = (
     <>
-      <MarginedContainer>
-        <Button variant="contained" color="secondary" onClick={handleVisorButtonClick}>
-          Show training progress
-        </Button>
-      </MarginedContainer>
-      <MarginedContainer>
-        <Typography id="hidden-unit-slider" gutterBottom>
-          Units in hidden layer
-        </Typography>
-        <Grid container spacing={3} justify="center">
-          <Grid item>
-            <Slider
-              value={typeof hiddenLayerUnits === 'number' ? hiddenLayerUnits : 0}
-              onChange={handleSliderChange}
-              aria-labelledby="hidden-unit-slider"
-              style={{ width: 64 }}
-              min={0}
-              max={32}
-            />
-          </Grid>
-          <Grid item>
-            <Input
-              value={hiddenLayerUnits}
-              margin="dense"
-              onChange={handleInputChange}
-              onBlur={handleBlur}
-              inputProps={{
-                min: 0,
-                max: 32,
-                type: 'number',
-                'aria-labelledby': 'hidden-unit-slider',
-              }}
-            />
-          </Grid>
-        </Grid>
-      </MarginedContainer>
-      <MarginedContainer>
-        <Button variant="contained" color="primary" onClick={handleBuildButtonClick}>
-          Build Model
-        </Button>
-      </MarginedContainer>
-      {
-        model ? 
-        <MarginedContainer>
-            <Grid container spacing={2} justify="center">
-              <Grid item>
-                <Button variant="contained" color="primary" onClick={handleVisualiseModelButtonClick}>
-                  Visualise
-                </Button>
-              </Grid>
-              <Grid item>
-                <Button variant="contained" color="primary" 
-                        onClick={handleTrainModelButtonClick}
-                        disabled={isTraining}>
-                  Train Model
-                </Button>
-              </Grid>
-              {
-                isTraining ? 
-                <Grid item>
-                  <Button variant="contained" color="secondary"
-                    onClick={handleStopTrainingButtonClick}>
-                    Stop training
-                  </Button>
-                </Grid> : null
-              }
-             
-            </Grid>
-        </MarginedContainer> : null
-      }
-      <MarginedContainer ref={modelP5Parent}>
-        <></>
-      </MarginedContainer>
+      <Typography variant='h4' gutterBottom>Multi-layer Perceptron</Typography>
+      <MainTextBox>
+        In this simple demo, we use a simple multilayer perceptron model to learn the CA update rule. Notice this problem is a non-linearly separable problem like the XOR problem, so if there's no hidden layer (hidden layer units slider set to 0), the single output perceptron would not be able to converge to a solution.<br/>
+        You can play around and build models, change hyperparameters, and train the model to learn the CA rule you have specified on the CA side. Compare the visualisation result before and after the training is complete.
+      </MainTextBox>
+      <img alt="mlp model" style={{ maxWidth: '80%' }} src='https://ars.els-cdn.com/content/image/1-s2.0-S2405656118301020-gr1.jpg'></img>
+      <ElemCAML ruleNum={ruleNum}/>
     </>
   )
   return <TwoColumnsGrid left={left} right={right} />;

@@ -22,7 +22,7 @@ import BugReportIcon from '@material-ui/icons/BugReport';
 import TextureIcon from '@material-ui/icons/Texture';
 
 import { Route, Switch, Link } from "react-router-dom";
-import { Home, ElemCA } from "./components";
+import { Home, ElemCA, GoL, Texture } from "./components";
 import { createVisor } from './helper';
 
 const drawerWidth = 240;
@@ -161,11 +161,11 @@ export default function App() {
                         <ListItemIcon> <LooksOneIcon /> </ListItemIcon>
                         <ListItemText primary="Elementary CA" />
                     </ListItem>
-                    <ListItem button key="gol">
+                    <ListItem button key="gol" component={Link} to="/gol">
                         <ListItemIcon> <BugReportIcon /> </ListItemIcon>
                         <ListItemText primary="Game of Life" />
                     </ListItem>
-                    <ListItem button key="texture_synthesis">
+                    <ListItem button key="texture_synthesis" component={Link} to="/texture">
                         <ListItemIcon> <TextureIcon /> </ListItemIcon>
                         <ListItemText primary="Texture Synthesis" />
                     </ListItem>
@@ -176,6 +176,8 @@ export default function App() {
                 <Switch>
                     <Route exact path="/" component={() => <Home />} />
                     <Route exact path="/elementary" component={() => <ElemCA />} />
+                    <Route exact path="/gol" component={() => <GoL />} />
+                    <Route exact path="/texture" component={() => <Texture />} />
                 </Switch>
             </main>
         </div>
