@@ -54,10 +54,7 @@ export default function ElemCAp5(parent, ruleNum) {
                 return 0;
             };
         }
-
-        // let x = 100;
-        // let y = 100;
-
+        
         let ca;
         sketch.setup = () => {
             sketch.createCanvas(0.8 * parent.offsetWidth, 0.8 * parent.offsetWidth);

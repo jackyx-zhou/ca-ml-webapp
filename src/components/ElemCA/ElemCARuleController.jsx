@@ -89,9 +89,7 @@ export default function ElemCARuleController(props) {
                     Visualise
                 </Button>
             </MarginedContainer>
-            <MarginedContainer ref={elemP5Parent}>
-                <></>
-            </MarginedContainer> 
+            <MarginedContainer ref={elemP5Parent} />
         </>
     )
 }

@@ -1,7 +1,19 @@
-import React from "react";
+import React from 'react';
+import TwoColumnsGrid from './TwoColumnsGrid';
+import GoLGridController from './GoL/GoLGridController';
+import GoLML from './GoL/GoLML';
 
 export default function GoL() {
-  return <img alt="under construction" 
-  src='https://www.tsohost.com/assets/uploads/blog/under-construction-pages-1-image-library.jpg'
-  style={{maxWidth: "90%"}}/>;
+  const left = (
+    <>
+      <GoLGridController />
+    </>
+  )
+
+  const right = (
+    <>
+      <GoLML />
+    </>
+  )
+  return <TwoColumnsGrid left={left} right={right}/>;
 }
