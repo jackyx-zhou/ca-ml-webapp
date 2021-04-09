@@ -18,7 +18,9 @@ export default function GoLML(props) {
   const surface3 = { name: 'Hidden Layer Summary Post Training', tab: 'Game of Life'}
 
   useEffect(() => {
-    setGoltfjs(new GoLtfjs());
+    const gol = new GoLtfjs();
+    setGoltfjs(gol);
+    tfvis.show.modelSummary(surface1, gol.model);
   }, [])
 
   const handleVisorButtonClick = event => {
@@ -30,18 +32,19 @@ export default function GoLML(props) {
   }
 
   const handleTrainModelButtonClick = event => {
-    // catf.train(model, ruleNum).then(() => {
-    //   setIsTraining(false);
-    //   tfvis.show.layer(surface3, model.getLayer(undefined, 1));
-    // });
-    // tfvis.visor().open();
-    // setIsTraining(true);
+    goltfjs.train();
+    tfvis.visor().open();
+    setIsTraining(true);
   }
 
   const handleStopTrainingButtonClick = event => {
-    // model.stopTraining = true;
-    // setIsTraining(false);
-    // tfvis.show.layer(surface2, model.getLayer(undefined, 1));
+    goltfjs.model.stopTraining = true;
+    setIsTraining(false);
+    tfvis.show.layer(surface2, goltfjs.model.getLayer(undefined, 2));
+  }
+
+  const handlePredictButtonClick = event => {
+    
   }
 
   return (
@@ -77,6 +80,11 @@ export default function GoLML(props) {
             }
             
           </Grid>
+      </MarginedContainer>
+      <MarginedContainer>
+        <Button variant="contained" color="primary" onClick={handlePredictButtonClick}>
+          Predict Next Timestamp
+        </Button>
       </MarginedContainer>
       <MarginedContainer>
         {canvas}

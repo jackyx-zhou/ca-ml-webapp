@@ -7,6 +7,7 @@ export default function GoLp5(parent) {
     let cellWidth;
 
     this.gol= new GoL(n);
+    this.isRunning = true;
 
     const s = (sketch) => {
         sketch.setup = () => {
@@ -14,7 +15,7 @@ export default function GoLp5(parent) {
             cellWidth = sketch.width / n;
             sketch.resizeCanvas(n * cellWidth, n * cellWidth);
             sketch.background(0);
-            sketch.frameRate(30);
+            sketch.frameRate(15);
         };
 
         sketch.draw = () => {
@@ -32,7 +33,9 @@ export default function GoLp5(parent) {
                 }
             }
 
-            this.gol.computeNext();
+            if (this.isRunning) {
+                this.gol.computeNext();
+            }
         }
 
         sketch.windowResized = () => {

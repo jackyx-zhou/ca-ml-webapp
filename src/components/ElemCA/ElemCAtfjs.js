@@ -64,7 +64,7 @@ export async function train(model, caRuleNum) {
     });
 }
 
-export function doPrediction(model, data, testDataSize = 500) {
+export function doPrediction(model) {
     return tf.tidy(() => {
         let preds = model.predict(trainXs).dataSync();
         return preds.map(x => Number(x > 0.5));

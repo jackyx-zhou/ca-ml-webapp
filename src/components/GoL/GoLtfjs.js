@@ -2,82 +2,117 @@ import * as tf from '@tensorflow/tfjs';
 import * as tfvis from '@tensorflow/tfjs-vis';
 import GoL from './GoL';
 
-export default function GoLtfjs() {
-    const exampleSize = 100;
-    const imageSize = 28;
-
-    this.trainXs = new Array(exampleSize);
-    this.trainYs = new Array(exampleSize);
-    for (let i = 0; i < exampleSize; i++) {
-        let example = new GoL(imageSize);
-        this.trainXs[i] = tf.tensor2d(example.grid);
-        example.computeNext();
-        this.trainYs[i] = tf.tensor2d(example.grid);
+class PeriodicPaddingLayer extends tf.layers.Layer {
+    constructor() {
+        super({});
     }
+
+    computeOutputShape(inputShape) {
+        const outputShape = [...inputShape]
+        outputShape[1] += 2;
+        outputShape[2] += 2;
+        return outputShape;
+    }
+
+    call(input, kwargs) {
+        input = input[0]
+        console.log(input)
+        const imageSide = input.shape[1];
+        const upper_pad = input.slice([0, imageSide-1, 0], [-1, 1, -1]);
+        const lower_pad = input.slice([0, 0, 0], [-1, 1, -1]);
+        const partial_image = tf.concat([upper_pad, input, lower_pad], 1);
+        const left_pad = partial_image.slice([0, 0, imageSide-1], [-1, -1, 1]);
+        const right_pad = partial_image.slice([0, 0, 0], [-1, -1, 1]);
+        const padded_image = tf.concat([left_pad, partial_image, right_pad], 2);
+        console.log(padded_image.shape)
+        return padded_image; 
+    }
+
+    getClassName() { return 'PeriodicPadding'}
+}
+
+export default function GoLtfjs() {
+    const EXAMPLE_SIZE = 100;
+    const IMAGE_SIZE = 28;
+
+    this.trainXs = new Array(EXAMPLE_SIZE);
+    this.trainYs = new Array(EXAMPLE_SIZE);
+    for (let i = 0; i < EXAMPLE_SIZE; i++) {
+        let example = new GoL(IMAGE_SIZE);
+        this.trainXs[i] = example.grid;
+        example.computeNext();
+        this.trainYs[i] = example.grid;
+    }
+    this.trainXs = tf.tensor(this.trainXs).reshape([EXAMPLE_SIZE, IMAGE_SIZE, IMAGE_SIZE, 1]);
+    this.trainYs = tf.tensor(this.trainYs).reshape([EXAMPLE_SIZE, IMAGE_SIZE * IMAGE_SIZE, 1]);
 
     this.model = getModel();
     this.isTraining = false;
 
-    // export async function train(model, caRuleNum) {
-    //     if (trainYs) trainYs.dispose();
+    this.train = () => {
+        const metrics = ['loss', 'acc'];
+        const container = {
+            name: 'Model Training', tab: 'Game of Life'
+        };
+        const fitCallbacks = {
+            ...tfvis.show.fitCallbacks(container, metrics,),
+            onEpochEnd: (epoch, logs) => {
+                if (logs['acc'] > 0.95) this.model.stopTraining = true;
+            }
+        };
 
-    //     const metrics = ['loss', 'acc'];
-    //     const container = {
-    //         name: 'Model Training', tab: '1D CA'
-    //     };
-    //     const fitCallbacks = {
-    //         ...tfvis.show.fitCallbacks(container, metrics,),
-    //         onEpochEnd: (epoch, logs) => {
-    //             if (logs['acc'] > 0.9) model.stopTraining = true;
-    //         }
-    //     };
+        return this.model.fit(this.trainXs, this.trainYs, {
+            epochs: 100,
+            callbacks: fitCallbacks
+        });
+    }
 
-    //     trainYs = caRuleNum.toString(2).padStart(8, '0').split("").map(Number);
-    //     trainYs = tf.stack(trainYs);
+    this.doPrediction= (image) => {
+        return tf.tidy(() => {
+            image = tf.tensor2d(image).reshape([1, IMAGE_SIZE, IMAGE_SIZE, 1])
+            let pred = this.model.predict(image).dataSync();
+            console.log(pred)
+            return pred;
+        })
+    }
 
-    //     return model.fit(trainXs, trainYs, {
-    //         epochs: 500,
-    //         callbacks: fitCallbacks
-    //     });
-    // }
+    function getModel() {
+        tf.disposeVariables();
+        const model = tf.sequential();
+    
+        model.add(tf.layers.inputLayer({ inputShape: [IMAGE_SIZE, IMAGE_SIZE, 1] }));
+        model.add(new PeriodicPaddingLayer());
+        model.add(tf.layers.conv2d({
+            filters: 10,
+            kernelSize: 3,
+            padding: 'valid',
+            activation: 'relu',
+        }));
+    
+        model.add(tf.layers.reshape({
+            targetShape: [-1, 10]
+        }))
+        model.add(tf.layers.dense({
+            units: 20,
+            activation: 'relu'
+        }))
+        model.add(tf.layers.dense({
+            units: 1,
+            activation: 'relu'
+        }))
+    
+        // Choose an optimizer, loss function and accuracy metric,
+        // then compile and return the model
+        const optimizer = tf.train.adam(1e-2);
+        model.compile({
+            optimizer: optimizer,
+            loss: 'binaryCrossentropy',
+            metrics: ['accuracy'],
+        });
+    
+        return model;
+    }
 
-    // function doPrediction(model, data, testDataSize = 500) {
-    //     return tf.tidy(() => {
-    //         let preds = model.predict(trainXs).dataSync();
-    //         return preds.map(x => Number(x > 0.5));
-    //     })
-    // }
-}
-
-
-function getModel() {
-    tf.disposeVariables();
-    const model = tf.sequential();
-    // const INPUT_SIZE = 3;
-
-    // model.add(tf.layers.inputLayer({ inputShape: [INPUT_SIZE] }));
-    // if (hiddenLayerUnits > 0) {
-    //     model.add(tf.layers.dense({
-    //         units: hiddenLayerUnits,
-    //         activation: 'relu'
-    //     }));
-    // }
-
-    // model.add(tf.layers.dense({
-    //     units: 1,
-    //     activation: 'sigmoid'
-    // }))
-
-    // // Choose an optimizer, loss function and accuracy metric,
-    // // then compile and return the model
-    // const optimizer = tf.train.sgd(0.2);
-    // model.compile({
-    //     optimizer: optimizer,
-    //     loss: 'binaryCrossentropy',
-    //     metrics: ['accuracy'],
-    // });
-
-    return model;
 }
 
 // async function showAccuracy(model, data) {
