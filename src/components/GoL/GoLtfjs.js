@@ -16,7 +16,7 @@ class PeriodicPaddingLayer extends tf.layers.Layer {
 
     call(input, kwargs) {
         input = input[0]
-        console.log(input)
+
         const imageSide = input.shape[1];
         const upper_pad = input.slice([0, imageSide-1, 0], [-1, 1, -1]);
         const lower_pad = input.slice([0, 0, 0], [-1, 1, -1]);
@@ -24,7 +24,6 @@ class PeriodicPaddingLayer extends tf.layers.Layer {
         const left_pad = partial_image.slice([0, 0, imageSide-1], [-1, -1, 1]);
         const right_pad = partial_image.slice([0, 0, 0], [-1, -1, 1]);
         const padded_image = tf.concat([left_pad, partial_image, right_pad], 2);
-        console.log(padded_image.shape)
         return padded_image; 
     }
 
@@ -39,6 +38,7 @@ export default function GoLtfjs() {
     this.trainYs = new Array(EXAMPLE_SIZE);
     for (let i = 0; i < EXAMPLE_SIZE; i++) {
         let example = new GoL(IMAGE_SIZE);
+        example.randomInitialise();
         this.trainXs[i] = example.grid;
         example.computeNext();
         this.trainYs[i] = example.grid;
@@ -57,7 +57,7 @@ export default function GoLtfjs() {
         const fitCallbacks = {
             ...tfvis.show.fitCallbacks(container, metrics,),
             onEpochEnd: (epoch, logs) => {
-                if (logs['acc'] > 0.95) this.model.stopTraining = true;
+                if (logs['loss'] < 0.05) this.model.stopTraining = true;
             }
         };
 
@@ -70,8 +70,8 @@ export default function GoLtfjs() {
     this.doPrediction= (image) => {
         return tf.tidy(() => {
             image = tf.tensor2d(image).reshape([1, IMAGE_SIZE, IMAGE_SIZE, 1])
-            let pred = this.model.predict(image).dataSync();
-            console.log(pred)
+            let pred = this.model.predict(image);
+            pred = pred.reshape([IMAGE_SIZE, IMAGE_SIZE])
             return pred;
         })
     }
@@ -98,7 +98,7 @@ export default function GoLtfjs() {
         }))
         model.add(tf.layers.dense({
             units: 1,
-            activation: 'relu'
+            activation: 'sigmoid'
         }))
     
         // Choose an optimizer, loss function and accuracy metric,

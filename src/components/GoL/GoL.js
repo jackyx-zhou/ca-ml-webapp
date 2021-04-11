@@ -1,7 +1,11 @@
 export default function GoL(n) {
     let cols = n;
     let rows = n;
-    this.grid = make2DArrayRandom(cols, rows);
+    this.grid = make2DArrayEmpty(cols, rows);
+
+    this.randomInitialise = () => {
+        this.grid = make2DArrayRandom(cols, rows);
+    }
 
     this.computeNext = () => {
         let next = make2DArray(cols, rows);
@@ -46,6 +50,16 @@ function make2DArray(cols, rows) {
         arr[i] = new Array(rows);
     }
     return arr;
+}
+
+function make2DArrayEmpty(cols, rows) {
+    let grid = make2DArray(cols, rows);
+    for (let i = 0; i < cols; i++) {
+        for (let j = 0; j < rows; j++) {
+            grid[i][j] = 0;
+        }
+    }
+    return grid;
 }
 
 function make2DArrayRandom(cols, rows) {
