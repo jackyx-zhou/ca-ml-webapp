@@ -56,8 +56,8 @@ export default function GoLtfjs() {
         };
         const fitCallbacks = {
             ...tfvis.show.fitCallbacks(container, metrics,),
-            onEpochEnd: (epoch, logs) => {
-                if (logs['loss'] < 0.05) this.model.stopTraining = true;
+            onBatchEnd: (epoch, logs) => {
+                if (logs['loss'] < 0.01) this.model.stopTraining = true;
             }
         };
 

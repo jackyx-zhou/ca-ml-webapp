@@ -59,7 +59,7 @@ export default function ElemCAML(props) {
   const handleStopTrainingButtonClick = event => {
     model.stopTraining = true;
     setIsTraining(false);
-    tfvis.show.layer(surface2, model.getLayer(undefined, 1));
+    tfvis.show.layer(surface3, model.getLayer(undefined, 1));
   }
 
   const handleVisualiseModelButtonClick = (event) => {

@@ -51,8 +51,8 @@ export async function train(model, caRuleNum) {
         name: 'Model Training', tab: '1D CA'
     };
     const fitCallbacks = {...tfvis.show.fitCallbacks(container, metrics,), 
-        onEpochEnd: (epoch, logs) => {
-            if (logs['acc'] > 0.9) model.stopTraining = true;
+        onBatchEnd: (epoch, logs) => {
+            if (logs['loss'] < 0.05) model.stopTraining = true;
         }};
 
     trainYs = caRuleNum.toString(2).padStart(8, '0').split("").map(Number);
@@ -70,21 +70,3 @@ export function doPrediction(model) {
         return preds.map(x => Number(x > 0.5));
     })
 }
-
-// async function showAccuracy(model, data) {
-//     const [preds, labels] = doPrediction(model, data);
-//     const classAccuracy = await tfvis.metrics.perClassAccuracy(labels, preds);
-//     const container = { name: 'Accuracy', tab: 'Evaluation' };
-//     tfvis.show.perClassAccuracy(container, classAccuracy, classNames);
-
-//     labels.dispose();
-// }
-
-// async function showConfusion(model, data) {
-//     const [preds, labels] = doPrediction(model, data);
-//     const confusionMatrix = await tfvis.metrics.confusionMatrix(labels, preds);
-//     const container = { name: 'Confusion Matrix', tab: 'Evaluation' };
-//     tfvis.render.confusionMatrix(container, { values: confusionMatrix, tickLabels: classNames });
-
-//     labels.dispose();
-// }

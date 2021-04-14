@@ -17,12 +17,13 @@ export default function GoLML(props) {
 
   const surface1 = { name: 'Model summary', tab: 'Game of Life' };
   const surface2 = { name: 'Hidden Layer Summary', tab: 'Game of Life' };
-  // const surface3 = { name: 'Hidden Layer Summary Post Training', tab: 'Game of Life'}
+  const surface3 = { name: 'Hidden Layer Summary Post Training', tab: 'Game of Life'}
 
   useEffect(() => {
     const gol = new GoLtfjs();
     setGoltfjs(gol);
     tfvis.show.modelSummary(surface1, gol.model);
+    tfvis.show.layer(surface2, gol.model.getLayer(undefined, 2));
   }, [])
 
   const handleVisorButtonClick = event => {
@@ -34,7 +35,10 @@ export default function GoLML(props) {
   }
 
   const handleTrainModelButtonClick = event => {
-    goltfjs.train();
+    goltfjs.train().then(() => {
+      setIsTraining(false);
+      tfvis.show.layer(surface3, goltfjs.model.getLayer(undefined, 2));
+    });
     tfvis.visor().open();
     setIsTraining(true);
   }
@@ -42,16 +46,19 @@ export default function GoLML(props) {
   const handleStopTrainingButtonClick = event => {
     goltfjs.model.stopTraining = true;
     setIsTraining(false);
-    tfvis.show.layer(surface2, goltfjs.model.getLayer(undefined, 2));
+    tfvis.show.layer(surface3, goltfjs.model.getLayer(undefined, 2));
   }
 
   const handlePredictButtonClick = event => {
-    golp5.isTraining = false;
+    golp5.isRunning = false;
     setisp5Running(false);
+    
     let predImage = goltfjs.doPrediction(golp5.gol.grid);
     predImage = predImage.arraySync()
+    golp5.gol.computeNext();
+    const referenceGrid = golp5.gol.grid;
     if (golMLp5) golMLp5.p5.remove()
-    setgolMLp5(new GoLp5(golMLp5Parent.current, predImage));
+    setgolMLp5(new GoLp5(golMLp5Parent.current, predImage, referenceGrid));
   }
 
   return (

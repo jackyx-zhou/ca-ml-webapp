@@ -39,35 +39,35 @@ export default function GoLGridController(props) {
         <>
             <MarginedContainer ref={golP5Parent} />
             <MarginedContainer>
-                <Grid container spacing={2} justify="center">
+                <Grid container spacing={3} justify="center">
+                    <Grid container item spacing={2} justify='space-evenly'>
                     <Grid item>
                         <Button variant="contained" color="primary" onClick={handleResetButtonClick}>
-                            Reset
+                            Clear board
                         </Button>
                     </Grid>
                     <Grid item>
                         <Button variant="contained" color="primary" onClick={handleInitialiseButtonClick}>
                             Random
                         </Button>
-                    </Grid>           
-                </Grid>
-            </MarginedContainer>
-            <MarginedContainer>                
-                {
+                    </Grid>
+                    </Grid>
+                    {
                     golp5 ? 
-                    <Grid container spacing={2} justify="center">
+                    <Grid container item spacing={2} justify="center">
                         <Grid item>
-                        <Button variant="contained" color="primary" onClick={handlePauseButtonClick}>
+                        <Button variant="contained" color="secondary" onClick={handlePauseButtonClick}>
                             {isp5Running? "Pause" : "Run" }
                         </Button>
                         </Grid>
                         <Grid item>
-                        <Button variant="contained" color="primary" onClick={handleStepButtonClick}>
+                        <Button variant="contained" color="secondary" onClick={handleStepButtonClick}>
                             Step
                         </Button>
                         </Grid>           
                     </Grid> : null
-                }
+                    }      
+                </Grid>
             </MarginedContainer>
         </>
     )
