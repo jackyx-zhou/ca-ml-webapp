@@ -30,7 +30,7 @@ class PeriodicPaddingLayer extends tf.layers.Layer {
     getClassName() { return 'PeriodicPadding'}
 }
 
-export default function GoLtfjs() {
+export default function GoLtfjs(convLayerFilters, denseLayerUnits) {
     const EXAMPLE_SIZE = 100;
     const IMAGE_SIZE = 28;
 
@@ -83,19 +83,21 @@ export default function GoLtfjs() {
         model.add(tf.layers.inputLayer({ inputShape: [IMAGE_SIZE, IMAGE_SIZE, 1] }));
         model.add(new PeriodicPaddingLayer());
         model.add(tf.layers.conv2d({
-            filters: 10,
+            filters: convLayerFilters,
             kernelSize: 3,
             padding: 'valid',
             activation: 'relu',
         }));
     
         model.add(tf.layers.reshape({
-            targetShape: [-1, 10]
+            targetShape: [-1, convLayerFilters]
         }))
-        model.add(tf.layers.dense({
-            units: 20,
-            activation: 'relu'
-        }))
+        if (denseLayerUnits > 0) {
+            model.add(tf.layers.dense({
+                units: denseLayerUnits,
+                activation: 'relu'
+            }))
+        }
         model.add(tf.layers.dense({
             units: 1,
             activation: 'sigmoid'
@@ -114,21 +116,3 @@ export default function GoLtfjs() {
     }
 
 }
-
-// async function showAccuracy(model, data) {
-//     const [preds, labels] = doPrediction(model, data);
-//     const classAccuracy = await tfvis.metrics.perClassAccuracy(labels, preds);
-//     const container = { name: 'Accuracy', tab: 'Evaluation' };
-//     tfvis.show.perClassAccuracy(container, classAccuracy, classNames);
-
-//     labels.dispose();
-// }
-
-// async function showConfusion(model, data) {
-//     const [preds, labels] = doPrediction(model, data);
-//     const confusionMatrix = await tfvis.metrics.confusionMatrix(labels, preds);
-//     const container = { name: 'Confusion Matrix', tab: 'Evaluation' };
-//     tfvis.render.confusionMatrix(container, { values: confusionMatrix, tickLabels: classNames });
-
-//     labels.dispose();
-// }

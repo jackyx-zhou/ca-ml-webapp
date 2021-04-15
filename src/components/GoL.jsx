@@ -42,7 +42,7 @@ export default function GoL() {
         The primary analogy between cellular automata and traditional convolutional neural networks arises from (1) the locality of the dynamics, and (2) simultaneous temporal updating of all spatial points.
         The single-neighborhood rule operator in CA can, in this way, be implemented as a convolutional operator as part of a CNN, allowing it to be applied synchronously to all pixel neighborhoods in an input image.<br/>
         <br/>
-        Below is an example implementation of an in-browser convolutional neural network. You can train it and then use it to predict the next step of the grid on the other panel with darker color indicating more confidence. Use the step button on the other side to verify the correctness of the prediction.
+        Below is an example implementation of an in-browser convolutional neural network. You can train it and then use it to predict the next step of the grid on the other panel.
       </MainTextBox>
       <img src={process.env.PUBLIC_URL + '/convolution.png'} style={{ maxWidth: '100%' }} alt="convolution diagram"/>
       <GoLML
