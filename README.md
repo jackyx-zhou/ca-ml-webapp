@@ -1,5 +1,5 @@
 # CA-ML
-http://jackyx-zhou.github.io/ca-ml-webapp
+The live version of this web project can be found at http://jackyx-zhou.github.io/ca-ml-webapp.
 
 ## Cellular Automata
 
@@ -7,7 +7,7 @@ I use p5.js to simulate and showcase most of the pattern formation process for s
 
 ## Maching Learning
 
-I use tensorflow.js to train simple machine learning model on client side, and use tfjs-vis to visualise training progress and model details.
+Transferring my prior knowledge of using Tensorflow 2.0 on Python, I use tensorflow.js to train simple machine learning model on client side, and use tfjs-vis to visualise training progress and model details.
 
 ## Webstack
 
